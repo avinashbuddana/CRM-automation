@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml* package-lock.json* yarn.lock* ./
 
 RUN if [ -f pnpm-lock.yaml ]; then \
-      corepack enable && corepack prepare pnpm@latest --activate && pnpm install --frozen-lockfile --prod; \
+      corepack enable && corepack prepare pnpm@9.15.5 --activate && pnpm install --frozen-lockfile --prod; \
     elif [ -f yarn.lock ]; then \
       yarn install --frozen-lockfile --production=true; \
     else \
