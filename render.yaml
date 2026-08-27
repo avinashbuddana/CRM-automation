@@ -1,0 +1,85 @@
+services:
+  - type: web
+    name: neurixa-birthday-automation
+    runtime: node
+    plan: starter
+    region: singapore
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+
+      - key: PORT
+        value: 3000
+
+      - key: APP_TIMEZONE
+        value: Asia/Kolkata
+
+      - key: ESPO_URL
+        sync: false
+
+      - key: ESPO_API_KEY
+        sync: false
+
+      - key: ESPO_ENTITY
+        value: Contact
+
+      - key: ESPO_NAME_FIELD
+        value: name
+
+      - key: ESPO_PHONE_FIELD
+        value: phoneNumber
+
+      - key: ESPO_BIRTHDATE_FIELD
+        value: cBirthDate
+
+      - key: ESPO_OPTIN_FIELD
+        value: cWhatsAppOptIn
+
+      - key: ESPO_LAST_SENT_FIELD
+        value: cLastBirthdaySent
+
+      - key: ESPO_STATUS_FIELD
+        value: cWhatsAppStatus
+
+      - key: ESPO_MESSAGE_ID_FIELD
+        value: cWhatsAppMessageId
+
+      - key: REQUIRE_WHATSAPP_OPT_IN
+        value: "false"
+
+      - key: ALLOW_REPEAT_SEND
+        value: "true"
+
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+
+      - key: WHATSAPP_ACCESS_TOKEN
+        sync: false
+
+      - key: WHATSAPP_TEMPLATE_NAME
+        value: birthdar_wish
+
+      - key: WHATSAPP_LANGUAGE_CODE
+        value: en
+
+      - key: WHATSAPP_TEMPLATE_HAS_NAME
+        value: "true"
+
+      - key: META_GRAPH_VERSION
+        value: v25.0
+
+      - key: WEBHOOK_VERIFY_TOKEN
+        sync: false
+
+      - key: ENABLE_DAILY_JOB
+        value: "false"
+
+      - key: DAILY_CRON
+        value: "0 9 * * *"
+
+      - key: MAX_BULK_SEND
+        value: "50"

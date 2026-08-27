@@ -1,0 +1,20 @@
+{
+  "name": "neurixa-crm-whatsapp-birthday",
+  "version": "1.0.0",
+  "private": true,
+  "description": "EspoCRM-driven WhatsApp birthday automation POC",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "check": "node --check server.js && node --check src/config.js && node --check src/espo.js && node --check src/birthdays.js && node --check src/whatsapp.js && node --check src/message-store.js && node --check public/app.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "node-cron": "^3.0.3"
+  }
+}

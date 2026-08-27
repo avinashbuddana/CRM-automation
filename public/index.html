@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Birthday Automation · Neurixa</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">N</div>
+        <div>
+          <strong>Neurixa</strong>
+          <span>Automation Console</span>
+        </div>
+      </div>
+
+      <nav>
+        <button class="nav-item active" data-nav="birthdays">
+          <span>◷</span> Birthday Automation
+        </button>
+        <button class="nav-item" id="refreshNav">
+          <span>↻</span> Refresh CRM
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="connection-dot"></div>
+        <div>
+          <strong id="crmConnectionText">Checking CRM…</strong>
+          <span id="crmEntityText">EspoCRM</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">CRM → WhatsApp</div>
+          <h1>Birthday Automation</h1>
+          <p>
+            Contacts are fetched live from EspoCRM. Customer data is not
+            permanently copied into this dashboard.
+          </p>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn secondary" id="addCustomerButton">+ Add customer</button>
+          <button class="btn secondary" id="refreshButton">Refresh CRM</button>
+          <button class="btn primary" id="sendTodayButton">
+            Send today's wishes
+          </button>
+        </div>
+      </header>
+
+      <section id="warningBox" class="warning hidden"></section>
+
+      <section class="stats">
+        <article class="metric">
+          <span>CRM contacts</span>
+          <strong id="totalCount">—</strong>
+          <small>Fetched live</small>
+        </article>
+        <article class="metric accent">
+          <span>Birthdays today</span>
+          <strong id="todayCount">—</strong>
+          <small id="todayDateLabel">Ready to send</small>
+        </article>
+        <article class="metric">
+          <span>Tomorrow</span>
+          <strong id="tomorrowCount">—</strong>
+          <small>Upcoming</small>
+        </article>
+        <article class="metric">
+          <span>Next 7 days</span>
+          <strong id="next7Count">—</strong>
+          <small>Plan ahead</small>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Customer birthdays</h2>
+            <p id="lastSyncedText">Waiting for CRM sync…</p>
+          </div>
+
+          <div class="tools">
+            <div class="search">
+              <span>⌕</span>
+              <input
+                id="searchInput"
+                type="search"
+                placeholder="Search name or phone"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="tabs" id="tabs">
+          <button class="tab active" data-filter="today">
+            Today <span id="tabTodayCount">0</span>
+          </button>
+          <button class="tab" data-filter="tomorrow">
+            Tomorrow <span id="tabTomorrowCount">0</span>
+          </button>
+          <button class="tab" data-filter="next7">
+            Next 7 days <span id="tabNext7Count">0</span>
+          </button>
+          <button class="tab" data-filter="upcoming">
+            Upcoming <span id="tabUpcomingCount">0</span>
+          </button>
+          <button class="tab" data-filter="all">
+            All <span id="tabAllCount">0</span>
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Birthday</th>
+                <th>WhatsApp</th>
+                <th>Opt-in</th>
+                <th>Delivery</th>
+                <th class="action-head">Action</th>
+              </tr>
+            </thead>
+            <tbody id="contactsBody">
+              <tr>
+                <td colspan="6" class="empty">Loading CRM contacts…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel compact">
+        <div class="panel-head">
+          <div>
+            <h2>Integration</h2>
+            <p>Current CRM and WhatsApp configuration.</p>
+          </div>
+        </div>
+
+        <div class="integration-grid">
+          <div>
+            <span>CRM</span>
+            <strong id="integrationCrm">EspoCRM</strong>
+          </div>
+          <div>
+            <span>Entity</span>
+            <strong id="integrationEntity">Contact</strong>
+          </div>
+          <div>
+            <span>WhatsApp template</span>
+            <strong id="integrationTemplate">—</strong>
+          </div>
+          <div>
+            <span>Language</span>
+            <strong id="integrationLanguage">—</strong>
+          </div>
+          <div>
+            <span>Timezone</span>
+            <strong id="integrationTimezone">—</strong>
+          </div>
+          <div>
+            <span>Daily job</span>
+            <strong id="integrationJob">Manual</strong>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+
+  <div id="customerModal" class="modal-backdrop hidden">
+    <div class="modal customer-modal">
+      <div class="modal-icon">+</div>
+      <h3>Add customer to CRM</h3>
+      <p>
+        This form creates the customer directly in EspoCRM through the API.
+        The automation dashboard does not keep a separate customer copy.
+      </p>
+
+      <form id="customerForm" class="customer-form">
+        <label>
+          First Name
+          <input
+            id="customerFirstName"
+            name="firstName"
+            type="text"
+            placeholder="e.g. Avinash"
+          />
+        </label>
+
+        <label>
+          Last Name
+          <input
+            id="customerLastName"
+            name="lastName"
+            type="text"
+            placeholder="e.g. Buddana"
+            required
+          />
+        </label>
+
+        <label>
+          WhatsApp phone
+          <input
+            id="customerPhone"
+            name="phone"
+            type="tel"
+            placeholder="+918320103048"
+            required
+          />
+          <small>Use country code, for example +91 for India.</small>
+        </label>
+
+        <label>
+          Date of birth
+          <input
+            id="customerBirthDate"
+            name="birthDate"
+            type="date"
+            required
+          />
+        </label>
+
+        <label class="checkbox-row">
+          <input
+            id="customerOptIn"
+            name="whatsAppOptIn"
+            type="checkbox"
+          />
+          <span>
+            WhatsApp opt-in confirmed
+            <small>Recommended for production marketing messages.</small>
+          </span>
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" id="customerCancel" class="btn secondary">
+            Cancel
+          </button>
+          <button type="submit" id="customerSave" class="btn primary">
+            Add to CRM
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <div id="confirmModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-icon">↗</div>
+      <h3 id="modalTitle">Send WhatsApp message?</h3>
+      <p id="modalCopy"></p>
+      <div class="modal-actions">
+        <button id="modalCancel" class="btn secondary">Cancel</button>
+        <button id="modalConfirm" class="btn primary">Send message</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
