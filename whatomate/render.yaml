@@ -1,0 +1,65 @@
+services:
+  - type: web
+    name: whatomate-test
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile.render
+    dockerContext: .
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: whatomate-test-db
+          property: connectionString
+      - key: WHATOMATE_DATABASE__USER
+        fromDatabase:
+          name: whatomate-test-db
+          property: user
+      - key: WHATOMATE_DATABASE__PASSWORD
+        fromDatabase:
+          name: whatomate-test-db
+          property: password
+      - key: REDIS_URL
+        fromService:
+          name: whatomate-test-redis
+          type: keyvalue
+          property: connectionString
+      - key: WHATOMATE_APP__ENVIRONMENT
+        value: production
+      - key: WHATOMATE_APP__DEBUG
+        value: "false"
+      - key: WHATOMATE_APP__ENCRYPTION_KEY
+        generateValue: true
+      - key: WHATOMATE_JWT__SECRET
+        generateValue: true
+      - key: WHATOMATE_WHATSAPP__WEBHOOK_VERIFY_TOKEN
+        generateValue: true
+      - key: WHATOMATE_DEFAULT_ADMIN__EMAIL
+        value: admin@admin.com
+      - key: WHATOMATE_DEFAULT_ADMIN__PASSWORD
+        generateValue: true
+      - key: WHATOMATE_RATE_LIMIT__ENABLED
+        value: "true"
+      - key: WHATOMATE_WHATSAPP__API_VERSION
+        value: v24.0
+      - key: WHATOMATE_CALLING__RECORDING_ENABLED
+        value: "false"
+      - key: WHATOMATE_STORAGE__TYPE
+        value: local
+  - type: keyvalue
+    name: whatomate-test-redis
+    plan: free
+    region: singapore
+    ipAllowList: []
+    maxmemoryPolicy: noeviction
+
+databases:
+  - name: whatomate-test-db
+    databaseName: whatomate_test_db
+    user: whatomate_test_db_user
+    plan: free
+    postgresMajorVersion: "17"
+    region: singapore
+    ipAllowList: []
