@@ -1,0 +1,6 @@
+FROM docker.io/shridh0r/whatomate:latest
+WORKDIR /app
+RUN printf '[app]\nname = "Whatomate Test"\n' > /app/config.toml
+COPY render-start.sh /app/render-start.sh
+RUN chmod 0755 /app/render-start.sh
+ENTRYPOINT ["/app/render-start.sh"]
